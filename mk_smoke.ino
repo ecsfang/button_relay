@@ -33,19 +33,19 @@ void handleRoot() {
 bool turn_relay_off(void *argument);
 
 bool turn_relay_on(void *argument) {
-    Serial.println(F("Turn relay ON!"));
-    onTimer.in(on_time*1000, turn_relay_off);
-    digitalWrite(LED_PIN, 0);
-    digitalWrite(RELAY_PIN, 1);
-    return false;
+  Serial.println(F("Turn relay ON!"));
+  digitalWrite(LED_PIN, 0);   // Turn LED on
+  digitalWrite(RELAY_PIN, 1); // Turn relay on
+  onTimer.in(on_time*1000, turn_relay_off); // Set new delay until turn off
+  return false;
 }
 
 bool turn_relay_off(void *argument) {
-    Serial.println(F("Turn relay OFF!"));
-   offTimer.in(off_time*1000, turn_relay_on);
-    digitalWrite(LED_PIN, 1);
-    digitalWrite(RELAY_PIN, 0);
-   return false;
+  Serial.println(F("Turn relay OFF!"));
+  digitalWrite(LED_PIN, 1);   // Turn LED off
+  digitalWrite(RELAY_PIN, 0); // Turn relay off
+  offTimer.in(off_time*1000, turn_relay_on); // Set new delay until next on-cycle
+  return false;
 }
 
 // Handle settings
@@ -76,6 +76,7 @@ void handleForm() {
    turn_relay_off(NULL);
    
  } else {
+   // We couldn't read a number from the configuration - so ignore!
    String s = "<a href='/'> Bad argument! </a>";
    server.send(200, "text/html", s); //Send web page
    Serial.println("Bad argument!");
@@ -89,7 +90,7 @@ void setup() {
   delay(1000);
   Serial.println(F("MK-Smoke!!"));
   
-  /* You can remove the password parameter if you want the AP to be open. */
+  // You can remove the password parameter if you want the AP to be open.
   WiFi.softAP(ssid, password);
 
   IPAddress myIP = WiFi.softAPIP();
@@ -98,9 +99,13 @@ void setup() {
 
   server.begin();
 
+  // Init gpio-pins
+  
   pinMode(LED_PIN, OUTPUT); 
   pinMode(RELAY_PIN, OUTPUT); 
   Serial.println(F("Start!"));
+  
+  // Start the timer in off-position!
   turn_relay_off(NULL);
 }
 
