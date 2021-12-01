@@ -6,7 +6,7 @@
 
 #include "mk_smoke.h"
 
-#define LED_PIN   D4  // Onboard led (lights when relay is on)
+#define LED_PIN   LED_BUILTIN  // Onboard led (lights when relay is on)
 #define RELAY_PIN D5  // Set to corresponding relay pin!
 
 int on_time = 5;     // Seconds on
